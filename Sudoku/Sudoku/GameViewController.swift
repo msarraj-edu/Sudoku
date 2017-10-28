@@ -15,7 +15,12 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let brain = SudokuBrain()
-        print(brain.getGrid())
+        brain.size = 9
+        print("first")
+        brain.shiftRow(atIndex: 0, by: 3)
+        print("second")
+        brain.shiftRow(atIndex: 0, by: -3)
+        
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
             if let scene = SKScene(fileNamed: "GameScene") {

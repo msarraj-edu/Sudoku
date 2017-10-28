@@ -12,7 +12,5 @@ import UIKit
 
 class SudokuViewController: UIViewController  {
     override func viewDidLoad(){
-        let brain = SudokuBrain()
-        print(brain.getGrid())
     }
 }

@@ -11,10 +11,41 @@ import Foundation
 
 
 class SudokuBrain{
-    let rows = "ABCDEFGHI"
-    let cols = "123456789"
+    private var rows = "ABCDEFGHI"
+    private var cols = "123456789"
+    private var boxes = [""]
+    private var rowUnits = [[""]]
+    private var columnUnits = [[""]]
+    private var squareUnits = [[""]]
+    private var gridValue = ["":""]
     
+    var size:UInt{
+        get{
+            return UInt(cols.count)
+        }
+        set(value){
+            if isSquareAndSmall(value){//only supports non-zero square values and fits A-Z (upto 26x26)
+                cols = ""
+                rows = ""
+                for index in 1...value{
+                    cols = cols + String(index)
+                }
+                rows = String("ABCDEFGHIJKLMNOPQRSTUVWXYZ".dropLast(26 - Int(value)))
+                boxes = getGrid()
+                rowUnits = getRowUnits()
+                columnUnits = getColumnUnits()
+                squareUnits = getSquareUnits()
+                gridValue = ["":""]
+            }
+        }
+    }
     
+    private func isSquareAndSmall(_ number:UInt)->Bool{
+        let double = Double(number)
+        let isSquare =  double.squareRoot().rounded() == double.squareRoot()
+        let isSmall = double.squareRoot() <= 26 //A-Z
+        return isSmall && isSquare && number > 0
+    }
 
     
     private func cross(_ a:String,_ b:String)->Array<String>{
@@ -31,12 +62,20 @@ class SudokuBrain{
         return cross(rows,cols)
     }
     
-    func getRows()->Array<Array<String>>{
+    func getRowUnits()->Array<Array<String>>{
         var result = Array<Array<String>>()
         for rIdx in rows.indices{
             result.append(cross(String(rows[rIdx]), cols))
         }
         return result
+    }
+    
+    func getColumnUnits()->Array<Array<String>>{
+        return [[""]]
+    }
+    
+    func getSquareUnits()->Array<Array<String>>{
+        return [[""]]
     }
     
 //    c+row_units = [cross(r, cols) for r in rows]
@@ -71,5 +110,54 @@ class SudokuBrain{
 //    8 . . |2 . 3 |. . 9
 //    . . 5 |. 1 . |3 . .
     
+    func gridValue(_ str:String)->Dictionary<String,String>{
+        var dict = Dictionary<String,String>()
+        for (a,b) in zip(getGrid(),str){
+            dict[a] = String(b)
+        }
+        return dict
+    }
     
+    // These functions are mistakenly shifting locations
+    // TODO: need to create value arrays to be shifted
+//    func shiftRow(atIndex index:UInt, by shift:Int){
+//        let shiftValue = shift % Int(size)
+//        rowUnits[Int(index)].rotate(positions:-shiftValue)
+//    }
+//    func shiftColumn(atIndex index:UInt, by shift:Int){
+//        let shiftValue = shift % Int(size)
+//        columnUnits[Int(index)].rotate(positions:-shiftValue)
+//    }
+}
+
+extension Array {
+    mutating func rotate(positions: Int, size: Int? = nil) {
+        guard positions < count && (size ?? 0) <= count else {
+            print("invalid input1")
+            return
+        }
+        if positions < 0{
+            let secondPositions = -positions
+            
+            reversed(start: 0, end: (size ?? count) - 1)
+            reversed(start: 0, end: secondPositions - 1)
+            reversed(start: secondPositions, end: (size ?? count) - 1)
+        }else{
+            reversed(start: 0, end: positions - 1)
+            reversed(start: positions, end: (size ?? count) - 1)
+            reversed(start: 0, end: (size ?? count) - 1)
+        }
+    }
+    mutating func reversed(start: Int, end: Int) {
+        guard start >= 0 && end < count && start < end else {
+            return
+        }
+        var start = start
+        var end = end
+        while start < end, start != end {
+            self.swapAt(start, end)
+            start += 1
+            end -= 1
+        }
+    }
 }
