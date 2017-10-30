@@ -17,9 +17,9 @@ class GameViewController: UIViewController {
         let brain = SudokuBrain()
         brain.size = 9
         print("first")
-        brain.shiftRow(atIndex: 0, by: 3)
+        //brain.shiftRow(atIndex: 0, by: 3)
         print("second")
-        brain.shiftRow(atIndex: 0, by: -3)
+        //brain.shiftRow(atIndex: 0, by: -3)
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
